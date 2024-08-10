@@ -1,0 +1,23 @@
+def get_embeddings(text):
+    inputs = embedding_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    with torch.no_grad():
+        outputs = embedding_model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
+
+# Create a custom embedding function
+class CustomHuggingFaceEmbeddings:
+    def __init__(self, model, tokenizer):
+        self.model = model
+        self.tokenizer = tokenizer
+    
+    def embed_documents(self, texts):
+        return [get_embeddings(text) for text in texts]
+    
+    def embed_query(self, text):
+        return get_embeddings(text)
+
+embeddings = CustomHuggingFaceEmbeddings(embedding_model, embedding_tokenizer)
+
+# Use the embeddings
+vectordb = Chroma.from_documents(documents=texts, embedding=embeddings, persist_directory="chroma_db")
+retriever = vectordb.as_retriever()
