@@ -43,4 +43,252 @@ retriever = vectordb.as_retriever()
 }
 
 
+Oracle
+### 1. *Database Instance Failure*
+   *Cause*: Can be due to hardware failures, operating system issues, or Oracle internal errors.
+   *Remediation Steps*:
+   - Check the alert log for errors (alert_<SID>.log).
+   - Diagnose the cause of the failure (e.g., hardware issues, OS errors).
+   - Restart the database instance using the STARTUP command.
+   - If the issue persists, restore the database from a backup.
 
+### 2. *Data File Corruption*
+   *Cause*: Can occur due to disk failures, power outages, or improper shutdowns.
+   *Remediation Steps*:
+   - Identify the corrupted data files using DBV (Data Block Verifier) or ANALYZE command.
+   - Restore the affected data files from a backup.
+   - Use the RECOVER command to apply archive logs and bring the data files up-to-date.
+   - In extreme cases, consider using RMAN (Recovery Manager) for advanced recovery options.
+
+### 3. *Control File Corruption*
+   *Cause*: Disk failures or improper shutdowns.
+   *Remediation Steps*:
+   - Restore the control file from a backup using RMAN.
+   - If a backup is not available, recreate the control file using the CREATE CONTROLFILE command.
+   - Recover the database using RECOVER DATABASE.
+
+### 4. *Log File Corruption*
+   *Cause*: Disk failures or OS-related issues.
+   *Remediation Steps*:
+   - Restore the log files from a backup.
+   - If the log file is missing, use ALTER DATABASE CLEAR LOGFILE to recreate it.
+   - Use RECOVER DATABASE to apply the necessary archive logs.
+
+### 5. *ORA-00600 and ORA-07445 Internal Errors*
+   *Cause*: These are Oracle internal errors typically caused by bugs or software issues.
+   *Remediation Steps*:
+   - Check the Oracle Metalink for the specific ORA error details.
+   - Apply any available patches from Oracle that address the issue.
+   - If necessary, contact Oracle support for further assistance.
+   - In some cases, you may need to restart the database.
+
+### 6. *ORA-01555: Snapshot Too Old*
+   *Cause*: This error occurs when a query attempts to access older data that has been overwritten in the undo tablespace.
+   *Remediation Steps*:
+   - Increase the size of the undo tablespace.
+   - Optimize the long-running queries to reduce the duration.
+   - Consider using FLASHBACK to recover the lost data if necessary.
+
+### 7. *ORA-03113: End-of-File on Communication Channel*
+   *Cause*: Network issues, database crash, or Oracle Net problems.
+   *Remediation Steps*:
+   - Check network connectivity between the client and the database server.
+   - Review the alert log and trace files for additional details.
+   - Restart the database instance if it has crashed.
+   - Verify Oracle Net configuration (listener.ora and tnsnames.ora).
+
+### 8. *ORA-04031: Unable to Allocate Shared Memory*
+   *Cause*: This occurs when the database is unable to allocate enough memory for the SGA (System Global Area).
+   *Remediation Steps*:
+   - Increase the size of the SGA or the specific memory pool (e.g., shared pool, large pool).
+   - Flush the shared pool using ALTER SYSTEM FLUSH SHARED_POOL.
+   - Review and optimize the memory-intensive SQL queries.
+
+### 9. *ORA-01652: Unable to Extend Temp Segment*
+   *Cause*: Insufficient space in the temporary tablespace.
+   *Remediation Steps*:
+   - Add more space to the temporary tablespace using ALTER TABLESPACE TEMP ADD TEMPFILE.
+   - Consider reducing the size of the temporary segments or optimizing queries that require large temporary segments.
+
+### 10. *ORA-00257: Archiver Error*
+   *Cause*: The archive log destination is full, and Oracle cannot archive redo logs.
+   *Remediation Steps*:
+   - Free up space in the archive log destination directory.
+   - Increase t…
+[21:50, 13/8/2024] Chinna ANNA: Sql Server 
+****
+[21:50, 13/8/2024] Chinna ANNA: Certainly! Below is a comprehensive list of common SQL Server database failures along with the steps to remediate each issue:
+
+### 1. *SQL Server Instance Failure*
+   *Cause*: Can occur due to hardware failures, operating system issues, or SQL Server internal errors.
+   *Remediation Steps*:
+   - Check the SQL Server error logs for specific error messages.
+   - Diagnose the cause (e.g., hardware, OS issues).
+   - Restart the SQL Server instance using SQL Server Management Studio (SSMS) or the SQL Server Configuration Manager.
+   - If the instance fails to start, review the logs and consider restoring from a backup.
+
+### 2. *Database Corruption (DBCC CHECKDB Errors)*
+   *Cause*: Disk failures, power outages, or improper shutdowns.
+   *Remediation Steps*:
+   - Run DBCC CHECKDB to detect corruption.
+   - Use the REPAIR_ALLOW_DATA_LOSS option of DBCC CHECKDB as a last resort if no backups are available.
+   - Restore the database from the most recent backup if corruption is detected.
+
+### 3. *Transaction Log Full (Error 9002)*
+   *Cause*: The transaction log file has reached its maximum size and can't auto-grow.
+   *Remediation Steps*:
+   - Backup the transaction log to free up space.
+   - Add more space to the transaction log file or enable auto-growth.
+   - Shrink the transaction log using DBCC SHRINKFILE, if necessary, after backing up.
+
+### 4. *TempDB Issues*
+   *Cause*: Insufficient disk space, large queries, or TempDB contention.
+   *Remediation Steps*:
+   - Increase the size of the TempDB database or move it to a different disk with more space.
+   - Optimize queries to reduce TempDB usage.
+   - Restart SQL Server to reset TempDB, if necessary.
+
+### 5. *Deadlocks*
+   *Cause*: Two or more sessions are blocking each other by holding resources the other needs.
+   *Remediation Steps*:
+   - Identify deadlocks using the SQL Server Profiler or Extended Events.
+   - Optimize queries to minimize locking and avoid long transactions.
+   - Implement error handling and retry logic in the application to handle deadlocks.
+
+### 6. *Database Connection Issues*
+   *Cause*: Network issues, misconfigured connection strings, or SQL Server being down.
+   *Remediation Steps*:
+   - Verify network connectivity between the client and the SQL Server.
+   - Ensure SQL Server is running and accepting connections.
+   - Check and correct the connection string in the application.
+
+### 7. *Memory Pressure*
+   *Cause*: Insufficient memory allocated to SQL Server, leading to performance degradation.
+   *Remediation Steps*:
+   - Monitor memory usage using Performance Monitor (PerfMon) or SQL Server's Dynamic Management Views (DMVs).
+   - Increase the memory allocated to SQL Server.
+   - Optimize queries and indexes to reduce memory usage.
+   - Consider adding more physical memory to the server.
+
+### 8. *CPU Pressure*
+   *Cause*: High CPU usage due to inefficient queries, poor indexing, or resource-intensive processes.
+   *Remediation Steps*:
+   - Identify CPU-intensive queries using the sys.dm_exec_query_stats DMV.
+   - Optimize queries and indexes.
+   - Offload resource-intensive processes to a separate server or schedule them during off-peak hours.
+   - Review and optimize server configuration settings.
+
+### 9. *Blocking*
+   *Cause*: Long-running transactions or poor indexing leading to blocked sessions.
+   *Remediation Steps*:
+   - Use sp_who2 or DMVs to identify the blocking session.
+   - Optimize the blocking queries.
+   - Kill the blocking session using the KILL command if necessary.
+   - Implement appropriate isolation levels or use NOLOCK hints if safe.
+
+### 10. *Slow Performance*
+   *Cause*: Inefficient queries, poor indexing, or resource contention.
+   *Remediation Steps*:
+   - Identify slow queries using the Query Store, Execution Plans, or SQL Profiler.
+   - Optimize queries and indexes.
+   - Rebuild or reorganize indexes.
+   - Review and adjust SQL Server configuration settings.
+
+### 11. *Backup Failures*
+   *Cause*: Disk space issues, permission problems, or network failures.
+   *Remediation Steps*:
+   - Check the SQL Server Agent job history for errors.
+   - Ensure sufficient disk space is available for backups.
+   - Verify that the account running the backup has the necessary permissions.
+   - Retry the backup manually and monitor for errors.
+
+### 12. *Restore Failures*
+   *Cause*: Corrupted backup files, version incompatibility, or insufficient permissions.
+   *Remediation Steps*:
+   - Verify the integrity of the backup files using RESTORE VERIFYONLY.
+   - Ensure you are restoring to a compatible version of SQL Server.
+   - Check permissions and ensure the account has the necessary access to the backup files and the destination server.
+   - Use WITH NORECOVERY if restoring a series of transaction log backups.
+
+### 13. *SQL Server Service Won't Start*
+   *Cause*: Corrupted master database, missing or corrupted files, or configuration issues.
+   *Remediation Steps*:
+   - Check the SQL Server error logs and Windows Event Viewer for details.
+   - Restore the master database from a backup using the sqlservr.exe command in single-user mode.
+   - Rebuild the master database if necessary using setup.exe with the /ACTION=REBUILDDATABASE option.
+
+### 14. *ORA-07445 Internal Errors*
+   *Cause*: These are internal SQL Server errors typically caused by software issues or bugs.
+   *Remediation Steps*:
+   - Review the SQL Server error logs for specific error messages.
+   - Apply the latest SQL Server service packs and cumulative updates.
+   - If necessary, contact Microsoft support for further assistance.
+
+### 15. *Database Not Accessible (Suspect or Recovery Pending)*
+   *Cause*: Transaction log corruption, insufficient disk space, or improper shutdown.
+   *Remediation Steps*:
+   - Review the error log to understand why the database is marked as suspect.
+   - Attempt to bring the database online using ALTER DATABASE <dbname> SET ONLINE.
+   - If the database is in recovery pending state, free up disk space and restart SQL Server.
+   - If necessary, restore the database from the last known good backup.
+
+### 16. *Replication Failures*
+   *Cause*: Network issues, agent failures, or data conflicts.
+   *Remediation Steps*:
+   - Check the replication monitor for errors.
+   - Ensure all replication agents are running.
+   - Resolve data conflicts if applicable.
+   - Reinitialize the replication if necessary.
+
+### 17. *Failover Cluster Issues*
+   *Cause*: Cluster node failures, quorum loss, or network issues.
+   *Remediation Steps*:
+   - Check the Windows Event Logs and SQL Server logs for details.
+   - Verify the health of all cluster nodes.
+   - Ensure the quorum configuration is correct and that there are no split-brain scenarios.
+   - Failover to a working node manually if necessary.
+
+### 18. *Disk I/O Bottlenecks*
+   *Cause*: High disk latency due to insufficient IOPS or misconfigured storage.
+   *Remediation Steps*:
+   - Use sys.dm_io_virtual_file_stats to monitor disk I/O.
+   - Ensure the storage subsystem is properly configured for SQL Server workloads.
+   - Optimize queries to reduce I/O usage.
+   - Consider moving data files to faster disks or implementing SSD storage.
+
+### 19. *Login Failures (Error 18456)*
+   *Cause*: Incorrect login credentials, account locked, or permissions issues.
+   *Remediation Steps*:
+   - Check the SQL Server error log for details on the login failure.
+   - Verify the login credentials and account status.
+   - Ensure the user has appropriate permissions to access the database.
+   - If necessary, unlock the account or reset the password.
+
+### 20. *Index Fragmentation*
+   *Cause*: High levels of data modification leading to inefficient index structure.
+   *Remediation Steps*:
+   - Monitor index fragmentation using sys.dm_db_index_physical_stats.
+   - Rebuild or reorganize indexes regularly.
+   - Consider adjusting the fill factor to reduce future fragmentation.
+
+### 21. *High Wait Times (Wait Stats)*
+   *Cause*: High resource contention or inefficient query processing.
+   *Remediation Steps*:
+   - Monitor wait statistics using DMVs like sys.dm_os_wait_stats.
+   - Identify and address the top wait types (e.g., CXPACKET, PAGEIOLATCH_SH).
+   - Optimize queries and reduce contention for shared resources.
+
+### 22. *Database Compatibility Level Issues*
+   *Cause*: Compatibility level mismatches after upgrading SQL Server.
+   *Remediation Steps*:
+   - Verify the database compatibility level using sp_dbcmptlevel.
+   - Adjust the compatibility level as needed to match the SQL Server version.
+   - Test the application and queries after changing the compatibility level.
+
+### General Best Practices:
+- *Regular Monitoring*: Set up alerts and monitoring for SQL Server health and performance.
+- *Backup Strategy*: Ensure regular backups and test the restore process frequently.
+- *Patching*: Keep SQL Server updated with the latest service packs and cumulative updates.
+- *Documentation*: Maintain clear documentation of SQL Server configurations, backup strategies, and disaster recovery plans.
+
+These steps should help address most of the common SQL Server database failures. Each environment may have unique considerations, so tailor these steps as necessary for your specific setup.
