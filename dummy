@@ -1,0 +1,89 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from langchain import PromptTemplate, LLMChain
+import uvicorn
+from pyngrok import ngrok
+import threading
+
+# FastAPI application
+app = FastAPI()
+
+# Enable CORS (for development purposes, adjust origins in production)
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins; tighten this in production
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+class Question(BaseModel):
+    question: str
+    context: str
+
+@app.post("/api/question")
+async def ask_question(data: Question):
+    question_p = data.question
+    context_p = data.context
+
+    # Replace with actual processing logic
+    answer = process_question(question_p, context_p)
+
+    return {"answer": answer}
+
+def process_question(question: str, context: str) -> str:
+    # Load your LLM and prompt template here
+    # Make sure to replace 'llm' and 'template' with your actual LLM and template
+
+    question_p = question
+    context_p = context
+
+     # Define your template based on the context
+    if "RCAnalyser" in context:
+        template = """You are a helpful assistant. Answer the following question based on the context provided. 
+        Format your answer as follows:
+        ### Problem Statement:
+        [Provide a concise statement of the problem or question at hand]
+
+        ### Solution:
+        [Provide your detailed solution or answer here]
+
+        ### Future Recommendations:
+        [Provide any relevant recommendations for future actions or improvements]
+
+        Context: {context}
+        Question: {question}
+        Answer:"""
+    else:
+        template = """You are a helpful assistant. Answer the following question based on the context provided:
+        Context: {context}
+        Question: {question}
+        Answer:"""
+
+    prompt = PromptTemplate(template=template, input_variables=["question", "context"])
+
+    # Load your LLM here (replace with actual loading code)
+    # llm = YourLLM()
+
+    # Create an LLMChain
+    llm_chain = LLMChain(prompt=prompt, llm=llm)
+
+    # Run the LLM chain and get the response
+    response = llm_chain.run({"question": question_p, "context": context_p})
+
+    return response
+
+# Function to run the FastAPI app
+def run_app():
+    uvicorn.run(app, host='0.0.0.0', port=5015)
+
+# Start the FastAPI app in a separate thread
+app_thread = threading.Thread(target=run_app, daemon=True)
+app_thread.start()
+# Replace with your actual ngrok auth token
+!ngrok authtoken 2huy1ryRzXvXFtllSB7r0Srq5B9_2Rse1MDMXch2sDFt8wobf
+# Expose the app using ngrok
+public_url = ngrok.connect(5015)
+print(f"Public URL: {public_url}")
